@@ -1,36 +1,63 @@
-from llama_index.core import SummaryIndex
+from llama_index.core import SummaryIndex, Settings
 from llama_index.core.node_parser import SentenceSplitter
 from llama_index.core.schema import Document
 from llama_index.llms.groq import Groq
 from llama_index.embeddings.huggingface import HuggingFaceEmbedding
-from config import settings
+from models.settings import settings
+import logging
+
 
 class SummarizerService:
     def __init__(self):
-        self.llm = Groq(model=settings.LLM_MODEL)
-        self.embed_model = HuggingFaceEmbedding(model_name=settings.EMBEDDING_MODEL)
+        try:
+            # Configure global LlamaIndex settings
+            Settings.llm = Groq(
+                model=settings.LLM_MODEL,
+                api_key=settings.GROQ_API_KEY
+            )
+            Settings.embed_model = HuggingFaceEmbedding(
+                model_name=settings.EMBEDDING_MODEL
+            )
+
+            self.splitter = SentenceSplitter(chunk_size=16384)
+            logging.info("SummarizerService initialized successfully")
+
+        except Exception as e:
+            logging.error(f"Failed to initialize SummarizerService: {str(e)}")
+            raise
 
     def summarize(self, user_input: str) -> str:
+        """Summarize text using Groq LLM with test paper format"""
         if not user_input.strip():
             return "[Empty input]"
 
-        document = Document(text=user_input)
-        splitter = SentenceSplitter(chunk_size=16384)
-        nodes = splitter.get_nodes_from_documents([document])
+        try:
+            # Create document and nodes
+            document = Document(text=user_input)
+            nodes = self.splitter.get_nodes_from_documents([document])
 
-        summary_index = SummaryIndex(nodes)
-        summary_query_engine = summary_index.as_query_engine(
-            response_mode="tree_summarize",
-            use_async=True
-        )
+            # Configure and query the summary engine
+            summary_index = SummaryIndex(nodes)
+            query_engine = summary_index.as_query_engine(
+                response_mode="tree_summarize",
+                use_async=True
+            )
 
-        query_prompt = '''Please summarize the following as if it was a test paper:
-Essay Title:
-Author:
-Author's Salient Points:
-Author's Weak Points:
-Points for Improvement:
-Score out of 10 (?/10):'''
+            prompt = """Please summarize as a test paper:
+            Essay Title:
+            Author:
+            Key Points (3-5):
+            Weaknesses (2-3):
+            Improvements Suggested:
+            Score (1-10):"""
 
-        response = summary_query_engine.query(query_prompt)
-        return str(response)
+            response = query_engine.query(prompt)
+            return str(response)
+
+        except Exception as e:
+            logging.error(f"Summarization failed: {str(e)}")
+            return f"Summarization error: {str(e)}"
+
+
+# Initialize service instance
+summarizer_service = SummarizerService()
