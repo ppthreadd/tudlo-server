@@ -11,7 +11,10 @@ AI-powered essay summarization service using FastAPI, LlamaIndex, and Groq.
 
 ### 1. Setup Virtual Environment
 ```bash
-    python -m venv .venv
+    python3 -m venv .venv
+```
+```bash
+    source .venv/bin/activate
 ```
 
 ### 2. Setup .env file (See .env.example for format)
