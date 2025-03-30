@@ -8,6 +8,7 @@ class Settings(BaseSettings):
     DEBUG: bool = True
     HOST: str = "0.0.0.0"
     PORT: int = 8000
+    USE_CUDA: bool = False
 
     # LLM and VectorDB settings
     GROQ_API_KEY: str
@@ -21,6 +22,5 @@ class Settings(BaseSettings):
         env_file = ".env"
         env_file_encoding = 'utf-8'
         extra = 'forbid'  # Prevent extra fields
-
 
 settings = Settings()
