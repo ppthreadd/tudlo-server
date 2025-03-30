@@ -1,28 +1,40 @@
-from typing import List, Dict, Any
 from pydantic import BaseModel
+from typing import List, Dict, Optional, Any
+
+class SingleSummaryResult(BaseModel):
+    topic: str
+    summary: str
+    text_length: int
+    processing_time: float
+    temperature_used: float
+    paragraphs: int
+    sentences: int
+
+
+class SummaryResult(BaseModel):
+    index: int
+    topic: str
+    summary: str
+    text_length: int
+    processing_time: float
+    temperature_used: float
+    paragraphs: int
+    sentences: int
+
+class ErrorResult(BaseModel):
+    index: int
+    error: str
+    text_sample: str
+
+class ProcessingMetrics(BaseModel):
+    total_texts: int
+    succeeded: int
+    failed: int
+    total_time: float
+    avg_time_per_text: Optional[float]
 
 class BatchSummarizeResponse(BaseModel):
-    summaries: List[Dict[str, Any]]
-    errors: List[Dict[str, Any]]
-    metrics: Dict[str, Any]
-
-    class Config:
-        schema_extra = {
-            "example": {
-                "summaries": [
-                    {
-                        "index": 0,
-                        "summary": "1. Core Subject...\n2. Key Findings...",
-                        "text_length": 150
-                    }
-                ],
-                "errors": [],
-                "metrics": {
-                    "total": 2,
-                    "succeeded": 2,
-                    "failed": 0,
-                    "avg_time": 1.5,
-                    "total_time": 3.0
-                }
-            }
-        }
+    results: List[SummaryResult]
+    errors: List[ErrorResult]
+    metrics: ProcessingMetrics
+    params: Dict[str, Any]
