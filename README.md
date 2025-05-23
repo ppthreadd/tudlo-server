@@ -6,7 +6,7 @@ Barebones prototype sample with basic features.
 ## 🚀 Setup Guide
 
 ### Prerequisites
-- Python 3.11+ (recommended)
+- Python 3.11+ (recommended) with FastAPI
 - Groq API key ([Get it here](https://console.groq.com/keys))
 - Linux/MacOS (Windows requires WSL for ChromaDB)
 
