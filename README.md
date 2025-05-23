@@ -1,6 +1,6 @@
 # Tudlo Essay Summarizer with RAG + VectorDB
 
-AI-powered essay summarization service using FastAPI, LlamaIndex, and Groq.
+API-based AI-powered essay summarization service using FastAPI, LlamaIndex, and Groq.
 Barebones prototype sample with basic features.
 
 ## 🚀 Setup Guide
